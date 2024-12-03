@@ -26,8 +26,10 @@ def generate_data(np, pd):
 
     data = {
         "Category1": np.random.choice(["A", "B", "C"], size=1000, p=[0.8, 0.15, 0.05]),  # A is much more common
-        "Category2": np.random.choice(["X", "Y", "Z"], size=1000, p=[0.1, 0.2, 0.7]),   # Z dominates
-        "Category3": np.random.choice(["M", "N"], size=1000, p=[0.9, 0.1]),             # M is much more common
+        "Category2": np.random.choice(["X", "Y", "Z"], size=1000, p=[0.1, 0.2, 0.7]),    # Z dominates
+        "Category3": np.random.choice(["M", "N"], size=1000, p=[0.9, 0.1]),              # M is much more common
+        "Category4": np.random.choice(["P", "Q", "R", "S"], size=1000, p=[0.4, 0.3, 0.2, 0.1]),  # P is most common
+        "Category5": np.random.choice(["Alpha", "Beta", "Gamma"], size=1000, p=[0.6, 0.3, 0.1]),  # Alpha dominates
         "Profiles": 1
     }
     df = pd.DataFrame(data)
@@ -46,19 +48,19 @@ def create_controls(mo):
     """Create UI controls for dimension selection"""
     # Create dropdowns with improved labels and organization
     x_axis_dropdown = mo.ui.dropdown(
-        options=["Category1", "Category2", "Category3"],
+        options=["Category1", "Category2", "Category3", "Category4", "Category5"],
         value="Category1",
         label="X-axis Dimension",
     )
 
     y_axis_dropdown = mo.ui.dropdown(
-        options=["Category1", "Category2", "Category3"],
+        options=["Category1", "Category2", "Category3", "Category4", "Category5"],
         value="Category2",
         label="Y-axis Dimension",
     )
 
     group_dropdown = mo.ui.dropdown(
-        options=["None", "Category1", "Category2", "Category3"],
+        options=["None", "Category1", "Category2", "Category3", "Category4", "Category5"],
         value="Category3",
         label="Group/Color Dimension",
     )
@@ -134,7 +136,9 @@ def create_bubble_chart(
     category_orders = {
         'Category1': sorted(df['Category1'].unique()),
         'Category2': sorted(df['Category2'].unique()),
-        'Category3': sorted(df['Category3'].unique())
+        'Category3': sorted(df['Category3'].unique()),
+        'Category4': sorted(df['Category4'].unique()),
+        'Category5': sorted(df['Category5'].unique())
     }
 
     plot_data = df.groupby(dimensions).sum(['Profiles']).reset_index()
