@@ -59,16 +59,16 @@ def create_controls(mo):
         label="Y-axis Dimension",
     )
 
-    group_dropdown = mo.ui.dropdown(
+    facet_col_dropdown = mo.ui.dropdown(
         options=["None", "Category1", "Category2", "Category3", "Category4", "Category5"],
-        value="Category3",
-        label="Group/Color Dimension",
+        value="None",
+        label="Column Facet Dimension",
     )
 
-    # Add subplot toggle for better control
-    use_subplots = mo.ui.checkbox(
-        value=True,
-        label="Use subplots when grouping"
+    facet_row_dropdown = mo.ui.dropdown(
+        options=["None", "Category1", "Category2", "Category3", "Category4", "Category5"],
+        value="None",
+        label="Row Facet Dimension",
     )
 
     mo.md("### Interactive Bubble Chart Controls")
@@ -89,8 +89,8 @@ def create_controls(mo):
             ),
             mo.vstack(
                 [
-                    mo.md("**Grouping:**"),
-                    mo.hstack([group_dropdown, use_subplots], 
+                    mo.md("**Faceting:**"),
+                    mo.hstack([facet_col_dropdown, facet_row_dropdown], 
                             justify="start", 
                             gap=1.0)
                 ],
@@ -105,8 +105,8 @@ def create_controls(mo):
     controls
     return (
         controls,
-        group_dropdown,
-        use_subplots,
+        facet_col_dropdown,
+        facet_row_dropdown,
         x_axis_dropdown,
         y_axis_dropdown,
     )
@@ -115,9 +115,9 @@ def create_controls(mo):
 @app.cell
 def create_bubble_chart(
     df,
-    group_dropdown,
+    facet_col_dropdown,
+    facet_row_dropdown,
     px,
-    use_subplots,
     x_axis_dropdown,
     y_axis_dropdown,
 ):
@@ -125,12 +125,15 @@ def create_bubble_chart(
     # Get selected dimensions
     x_dim = x_axis_dropdown.value
     y_dim = y_axis_dropdown.value
-    group_dim = group_dropdown.value
+    col_dim = facet_col_dropdown.value
+    row_dim = facet_row_dropdown.value
 
     # Prepare data based on selected dimensions
     dimensions = [x_dim, y_dim]
-    if group_dim != "None":
-        dimensions.append(group_dim)
+    if col_dim != "None":
+        dimensions.append(col_dim)
+    if row_dim != "None":
+        dimensions.append(row_dim)
 
     # Sort categories alphabetically for consistent display
     category_orders = {
@@ -151,16 +154,19 @@ def create_bubble_chart(
         'y': y_dim,
         'size': 'count',
         'title': 'Interactive Bubble Chart - Size shows record count',
-        'height': 500,
+        # 'height': 'auto',
         'hover_data': ['count'],
         'category_orders': category_orders  # Use consistent category ordering
     }
 
-    # Handle grouping dimension
-    if group_dim != "None":
-        fig_args['color'] = group_dim
-        if use_subplots.value:
-            fig_args['facet_col'] = group_dim
+    # Handle faceting dimensions
+    if col_dim != "None":
+        fig_args['color'] = col_dim
+        fig_args['facet_col'] = col_dim
+    if row_dim != "None":
+        if col_dim == "None":
+            fig_args['color'] = row_dim
+        fig_args['facet_row'] = row_dim
 
     # Create figure
     fig = px.scatter(**fig_args)
@@ -205,7 +211,7 @@ def create_bubble_chart(
     # Improve layout
     fig.update_layout(
         plot_bgcolor='white',
-        showlegend=True if group_dim != "None" else False,
+        showlegend=True if col_dim != "None" or row_dim != "None" else False,
         margin=dict(l=40, r=40, t=40, b=40)
     )
     return (
@@ -213,7 +219,8 @@ def create_bubble_chart(
         dimensions,
         fig,
         fig_args,
-        group_dim,
+        col_dim,
+        row_dim,
         plot_data,
         x_dim,
         y_dim,
