@@ -59,6 +59,12 @@ def create_controls(mo):
         label="Y-axis Dimension",
     )
 
+    color_dropdown = mo.ui.dropdown(
+        options=["None", "Category1", "Category2", "Category3", "Category4", "Category5"],
+        value="None",
+        label="Color Dimension",
+    )
+
     facet_col_dropdown = mo.ui.dropdown(
         options=["None", "Category1", "Category2", "Category3", "Category4", "Category5"],
         value="None",
@@ -96,6 +102,16 @@ def create_controls(mo):
                 ],
                 align="start",
                 gap=0.5
+            ),
+                        mo.vstack(
+                [
+                    mo.md("**Color:**"),
+                    mo.hstack([color_dropdown], 
+                            justify="start", 
+                            gap=1.0)
+                ],
+                align="start",
+                gap=0.5
             )
         ],
         justify="start",
@@ -105,6 +121,7 @@ def create_controls(mo):
     controls
     return (
         controls,
+        color_dropdown,
         facet_col_dropdown,
         facet_row_dropdown,
         x_axis_dropdown,
@@ -115,6 +132,7 @@ def create_controls(mo):
 @app.cell
 def create_bubble_chart(
     df,
+    color_dropdown,
     facet_col_dropdown,
     facet_row_dropdown,
     px,
@@ -127,6 +145,7 @@ def create_bubble_chart(
     y_dim = y_axis_dropdown.value
     col_dim = facet_col_dropdown.value
     row_dim = facet_row_dropdown.value
+    color_dim = color_dropdown.value
 
     # Prepare data based on selected dimensions
     dimensions = [x_dim, y_dim]
@@ -159,13 +178,15 @@ def create_bubble_chart(
         'category_orders': category_orders  # Use consistent category ordering
     }
 
+    # Handle color dimension
+    
+    if color_dim != "None":
+        fig_args['color'] = color_dim
+
     # Handle faceting dimensions
     if col_dim != "None":
-        # fig_args['color'] = col_dim
         fig_args['facet_col'] = col_dim
     if row_dim != "None":
-        if col_dim == "None":
-            fig_args['color'] = row_dim
         fig_args['facet_row'] = row_dim
 
     # Create figure
@@ -211,7 +232,7 @@ def create_bubble_chart(
     # Improve layout
     fig.update_layout(
         plot_bgcolor='white',
-        showlegend=True if col_dim != "None" or row_dim != "None" else False,
+        showlegend=True if color_dim != "None" else False,
         margin=dict(l=40, r=40, t=40, b=40)
     )
     return (
