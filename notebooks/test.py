@@ -154,14 +154,14 @@ def create_bubble_chart(
         'y': y_dim,
         'size': 'count',
         'title': 'Interactive Bubble Chart - Size shows record count',
-        # 'height': 'auto',
+        'height': 800,
         'hover_data': ['count'],
         'category_orders': category_orders  # Use consistent category ordering
     }
 
     # Handle faceting dimensions
     if col_dim != "None":
-        fig_args['color'] = col_dim
+        # fig_args['color'] = col_dim
         fig_args['facet_col'] = col_dim
     if row_dim != "None":
         if col_dim == "None":
