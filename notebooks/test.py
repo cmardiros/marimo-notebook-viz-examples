@@ -120,8 +120,8 @@ def create_controls(mo):
     )
     controls
     return (
-        controls,
         color_dropdown,
+        controls,
         facet_col_dropdown,
         facet_row_dropdown,
         x_axis_dropdown,
@@ -131,8 +131,8 @@ def create_controls(mo):
 
 @app.cell
 def create_bubble_chart(
-    df,
     color_dropdown,
+    df,
     facet_col_dropdown,
     facet_row_dropdown,
     px,
@@ -179,7 +179,7 @@ def create_bubble_chart(
     }
 
     # Handle color dimension
-    
+
     if color_dim != "None":
         fig_args['color'] = color_dim
 
@@ -237,12 +237,13 @@ def create_bubble_chart(
     )
     return (
         category_orders,
+        col_dim,
+        color_dim,
         dimensions,
         fig,
         fig_args,
-        col_dim,
-        row_dim,
         plot_data,
+        row_dim,
         x_dim,
         y_dim,
     )
